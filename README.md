@@ -31,3 +31,5 @@ The executables have been created without any problem in different
 Linux (Debian based --- as different versions of Debian and Ubuntu)
 operating systems. We do not know about other Linux Systems and
 Windows.
+
+All the code in this repository is authored by Lluís Alsedà and David Juher, 2008.
