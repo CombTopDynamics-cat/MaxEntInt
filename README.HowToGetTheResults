@@ -1,0 +1,436 @@
+This file explains how obtain the numerical results
+described in the paper
+
+"A lower bound for the maximum topological entropy of 4k+2-cycles"
+                             by
+               Lluis Alseda, David Juher and Deborah King
+
+by using the accompanying programs. Also gives some examples of
+outpout of these programs.
+
+-----------------------------------------------------------------
+To obtain the executables of the programs follow the instructions
+contained in the file 'README.HowToGetThePrograms'.
+
+CONVENTION: When we say "use the program 'xxx/yyy'" we mean:
+  go to the folder 'xxx' and run the program 'yyy.exe'.
+------------------------------------------------------------------
+
+=============================================================
+Table 1    Use the program 'general/CountJungreisCycles'
+=======    ---------------------------------------------
+
+Examples (period 4 and 12)
+--------------------------
+ajk@a01:~$ CountJungreisCycles.exe 4
+Total number of Jungreis cycles 2
+Total number of Jungreis cycles with zero exceptions 2
+
+ajk@a01:~$ CountJungreisCycles.exe 12
+Total number of Jungreis cycles 188892
+Total number of Jungreis cycles with zero exceptions 43320
+
+=============================================================
+Table 2    Use the program 'general/maxentint'
+=======    ---------------------------------------------
+
+Examples (period 4 and 10)
+--------------------------
+ajk@a01:~$ maxentint.exe 4 p4.out
+ajk@a01:~$ maxentint.exe 10 p10.out 6.0
+
+********************* listing of p4.out ***********************
+--- Computing maximal entropy for the interval for period 4 ---
+
+Permutation: (2,4,1,3)
+Entropy = log 2.4142135623730949
+
+Associated Markov Matrix:
+0 1 1 = 2
+1 1 1 = 3
+1 1 0 = 2
+----------
+2 3 2 = 7
+==========
+
+Permutation: (3,1,4,2)
+Entropy = log 2.4142135623730949
+
+Associated Markov Matrix:
+1 1 0 = 2
+1 1 1 = 3
+0 1 1 = 2
+----------
+2 3 2 = 7
+==========
+
+********************* listing of p10.out ***********************
+--- Computing maximal entropy for the interval for period 10 ---
+
+Permutation: (6,4,9,3,8,2,10,1,7,5)
+Entropy = log 6.1445660777812892
+
+Associated Markov Matrix:
+0 0 0 1 1 0 0 0 0 = 2
+0 0 0 1 1 1 1 1 0 = 5
+0 0 1 1 1 1 1 1 0 = 6
+0 0 1 1 1 1 1 0 0 = 5
+0 1 1 1 1 1 1 0 0 = 6
+0 1 1 1 1 1 1 1 1 = 8
+1 1 1 1 1 1 1 1 1 = 9
+1 1 1 1 1 1 0 0 0 = 6
+0 0 0 0 1 1 0 0 0 = 2
+----------------------
+2 4 6 8 9 8 6 4 2 = 49
+======================
+
+==============================================================
+Computation of the maximum entropy cycle in C^0_18 (Section 3)
+
+Use the programs 'general-products/GenerateFreeAList'
+                 'general-products/maxentcrossprod'
+                 'general-products/maxentdotprod'
+--------------------------------------------------------------
+Step 1: Generate the A-list:
+-------
+  ajk@a01:~$ GenerateFreeAList.exe 9
+  Total number of elements in the A list: 201600
+
+NOTE: The output is a file called: free-A-list.9
+
+Step 2: Computing alpha x beta and alpha . beta for all
+------- beta lower or equal than alpha in the file free-A-list.9
+
+     ajk@a01:~$ maxentcrossprod.exe free-A-list.9 11.0 > p18-cross.out
+     ajk@a01:~$ maxentdotprod.exe free-A-list.9 11.0 > p18-dot.out
+
+NOTES: Each of these commands last about 26 hours in the computer we
+       used. So, typically it has to be run in the background:
+       maxentcrossprod.exe free-A-list.9 11.0 > p18-cross.out &
+       maxentdotprod.exe free-A-list.9 11.0 > p18-dot.out &
+
+       Alternatively we can split these tasks in more jobs but
+       smaller. For example the task
+       ajk@a01:~$ maxentcrossprod.exe free-A-list.9 11.0 > p18-cross.out &
+       could be split as:
+
+ajk@a01:~$ maxentcrossprod.exe free-A-list.9 11.0 1:59048 > p18-cross-1:59048.out &
+ajk@a01:~$ maxentcrossprod.exe free-A-list.9 11.0 59049:201600 > p18-cross-59049:201600.out &
+
+********************************** Output *****************************************
+Computing maximal entropy of products for period: 18
+Listname: free-A-list.9
+Alpha interval checked: ****** to *******
+Filtering level 11.000000
+Maximum of entropy found for the following cycles:
+11.3342890140526880 (133681 . 133819)
+
+************************************************************************************
+
+NOTE TO THE OUTPUT: As we see, the output of maxentcrossprod and maxentdotprod
+tells the spectral radius of the product permutation of the two given elements,
+but alpha and beta are only specified by its position in the list.
+Next we discuss how to really know some elements of the list, their product
+and entropy.
+
+
+==============================================================
+Searching in list files
+
+Use the programs 'general-products/ReadAList'
+                 'general-products/singleprodinfo'
+--------------------------------------------------------------
+
+To really know the elements from the list that give the maximum entropy cycle
+-----------------------------------------------------------------------------
+ajk@a01:~$ ReadAList.exe free-A-list.9 133681:133681
+A list permutation length: 9
+Total number of elements in the A list: 201600
+
+Permutation: (7,4,1,9,2,3,5,6,8)
+
+
+ajk@a01:~$ ReadAList.exe free-A-list.9 133819:133819
+A list permutation length: 9
+Total number of elements in the A list: 201600
+
+Permutation: (7,4,2,3,1,9,5,6,8)
+
+
+Even better: to know all the information about the maximum entropy cycle
+------------------------------------------------------------------------
+ajk@a01:~$ singleprodinfo.exe free-A-list.9 133681 . 133819
+(7,4,1,9,2,3,5,6,8) . (7,4,2,3,1,9,5,6,8) = (10,8,12,5,13,3,15,4,16,2,18,1,17,6,14,7,11,9)
+Entropy = log 11.3342890140524819
+
+Associated Markov Matrix:
+0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 = 2
+0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 = 4
+0 0 0 0 1 1 1 1 1 1 1 0 0 0 0 0 0 = 7
+0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 0 0 = 8
+0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 = 10
+0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 = 12
+0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 0 = 11
+0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 = 12
+0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 = 14
+0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 = 16
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 = 17
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 = 16
+0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 = 11
+0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 0 = 8
+0 0 0 0 0 0 1 1 1 1 1 1 1 0 0 0 0 = 7
+0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 = 4
+0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 = 2
+---------------------------------------
+2 4 6 8 10 12 14 16 17 16 14 12 10 8 6 4 2 = 161
+=======================================
+
+
+How to list the whole list or a part of it
+-------------WHOLE------------------------
+ajk@a01:~$ ReadAList.exe free-A-list.9
+A list permutation length: 9
+Total number of elements in the A list: 201600
+
+Permutation: (2,1,3,4,5,6,7,8,9)
+Permutation: (2,1,3,4,5,6,7,9,8)
+Permutation: (2,1,3,4,5,6,8,7,9)
+Permutation: (2,1,3,4,5,6,8,9,7)
+Permutation: (2,1,3,4,5,6,9,7,8)
+Permutation: (2,1,3,4,5,6,9,8,7)
+Permutation: (2,1,3,4,5,7,6,8,9)
+Permutation: (2,1,3,4,5,7,6,9,8)
+Permutation: (2,1,3,4,5,7,8,6,9)
+Permutation: (2,1,3,4,5,7,8,9,6)
+       ...............
+
+-------------PART------------------------
+ajk@a01:~$ ReadAList.exe free-A-list.9 133680:133690
+A list permutation length: 9
+Total number of elements in the A list: 201600
+
+Permutation: (7,4,1,8,9,6,5,3,2)
+Permutation: (7,4,1,9,2,3,5,6,8)
+Permutation: (7,4,1,9,2,3,5,8,6)
+Permutation: (7,4,1,9,2,3,6,5,8)
+Permutation: (7,4,1,9,2,3,6,8,5)
+Permutation: (7,4,1,9,2,3,8,5,6)
+Permutation: (7,4,1,9,2,3,8,6,5)
+Permutation: (7,4,1,9,2,5,3,6,8)
+Permutation: (7,4,1,9,2,5,3,8,6)
+Permutation: (7,4,1,9,2,5,6,3,8)
+Permutation: (7,4,1,9,2,5,6,8,3)
+
+==============================================================
+Computation of the maximum entropy cycle in C^1_18 (Section 4)
+
+Use the programs '1-except/GenerateYZLists1Except'
+                 '1-except/maxent-1ex-crossprod'
+--------------------------------------------------------------
+Step 1: Generate the Y and Z lists:
+-------
+     ajk@a01:~$ GenerateYZLists1Except.exe 9
+     Generating the Y list ...
+     Total number of elements in the Y list: 9334080
+
+     Generating the Z list ...
+     Total number of elements in the Z list: 11128320
+
+
+NOTE: The output are two files called:
+      freealphalist-1ex-Y.9  and freealphalist-1ex-Z.9
+
+Step 2: Computing alpha x beta for all beta lower or equal
+------- than alpha in the files
+        freealphalist-1ex-Y.9  and freealphalist-1ex-Z.9
+
+ajk@a01:~$ maxent-1ex-crossprod.exe freealphalist-1ex-Y.9 p18-1ex-Y.out &
+ajk@a01:~$ maxent-1ex-crossprod.exe freealphalist-1ex-Z.9 p18-1ex-Z.out &
+
+NOTES: Each of these commands last about one year in the computer we
+       used. So, it is imperative to split the task in smaller jobs, as we
+       explained in the computation of the maximum entropy cycle for C^0_18.
+       This program apart from checking the maximodality of the cycle (that
+       in this case has to be done and not for the standard products) also
+       saves data each % of the work done to prevent loss of data due to
+       computer or power failures. A typical way of splitting the task
+       into (for example) four jobs would be:
+
+ajk@a01:~$ maxent-1ex-crossprod.exe freealphalist-1ex-Z.9 p18-1ex-Z-1:1490913.out -f=10.0 -i=1 -e=1490913 -r=0.1 &
+ajk@a01:~$ maxent-1ex-crossprod.exe freealphalist-1ex-Z.9 p18-1ex-Z-1490914:3259411.out -f=10.0 -i=1490914 -e=3259411 -r=0.1 &
+ajk@a01:~$ maxent-1ex-crossprod.exe freealphalist-1ex-Z.9 p18-1ex-Z-3259412:5564163.out -f=10.0 -i=3259412 -e=5564163 -r=0.1 &
+ajk@a01:~$ maxent-1ex-crossprod.exe freealphalist-1ex-Z.9 p18-1ex-Z-5564164:11128320.out -f=10.0 -i=5564164 -e=11128320 -r=0.1 &
+
+********************************** Output *****************************************
+Computing maximal entropy of products for period: 18
+Listname: freealphalist-1ex-Z.9
+Alpha interval checked: ****** to ******
+Maximum of entropy found for the following cycles:
+11.3212315059573942 (185340 x 211506)
+11.3212315059573942 (196302 x 203988)
+************************************************************************************
+
+NOTE TO THE OUTPUT: As above, the full information on the elements of the list given
+the maximal entropy, the resulting products and the Markov Matrix can be obtained with
+the help of the program 'general-products/singleprodinfo'.
+
+================================================================
+Figure 2 and Table 3   Use the program 'general/maxentallbounds'
+====================    ----------------------------------------
+
+ajk@a01:~$ maxentallbounds.exe 10
+4 2.5464790894703255 2.4142135623731416 2.4142135623731416
+5 3.1830988618379070 2.9562952014665034 2.9562952014665034
+6 3.8197186342054881 3.7320508075686352 3.5115471416929349
+7 4.4563384065730700 4.2824296406928228 4.2824296406928228
+8 5.0929581789406511 5.0273394921255390 5.0010672730504027
+9 5.7295779513082321 5.5903536864365693 5.5903536864365693
+10 6.3661977236758140 6.3137515146746992 6.1445660777813966
+
+NOTE: The figure has been made with the command
+            'ajk@a01:~$ maxentallbounds.exe 50'
+      and then the data has been manipulated with gnuplot.
+      In particular it has been transformed to a logarithmic
+      scale. At the end of this file you can find the gnuplot
+      script to generate the figure from the output of the command
+      'ajk@a01:~$ maxentallbounds.exe 50'.
+
+      The permutations and cycles appearing in the table were known
+      from the original references. The values of the entropy are
+      taken from the output of 'general/maxentallbounds'.
+
+=============================================================
+Table 4    Use the program '1-except/maxentint1except'
+=======    --------------------------------------------------
+
+Examples (period 8 and 13)
+--------------------------
+ajk@a01:~$ maxentint1except.exe 8 p8-1ex.out
+
+********************* listing of p8-1ex.out ***********************
+--- Computing maximal entropy for the maximodal interval cycles with one exception for period 8 ---
+
+Permutation: (4,3,8,2,7,1,6,5)
+Entropy = log 4.8208103682709424
+
+Associated Markov Matrix:
+0 0 1 0 0 0 0 = 1
+0 0 1 1 1 1 1 = 5
+0 1 1 1 1 1 1 = 6
+0 1 1 1 1 1 0 = 5
+1 1 1 1 1 1 0 = 6
+1 1 1 1 1 0 0 = 5
+0 0 0 0 1 0 0 = 1
+------------------
+2 4 6 5 6 4 2 = 29
+==================
+
+Permutation: (5,6,1,7,2,8,3,4)
+Entropy = log 4.8208103682709424
+
+Associated Markov Matrix:
+0 0 0 0 1 0 0 = 1
+1 1 1 1 1 0 0 = 5
+1 1 1 1 1 1 0 = 6
+0 1 1 1 1 1 0 = 5
+0 1 1 1 1 1 1 = 6
+0 0 1 1 1 1 1 = 5
+0 0 1 0 0 0 0 = 1
+------------------
+2 4 6 5 6 4 2 = 29
+==================
+
+
+ajk@a01:~$ maxentint1except.exe 13 p13-1ex.out 4.82
+
+********************* listing of p13-1ex.out ***********************
+--- Computing maximal entropy for the maximodal interval cycles with one exception for period 13 ---
+
+Permutation: (6,5,9,3,11,2,13,1,12,4,10,7,8)
+Entropy = log 8.0355656750487281
+
+Associated Markov Matrix:
+0 0 0 0 1 0 0 0 0 0 0 0 = 1
+0 0 0 0 1 1 1 1 0 0 0 0 = 4
+0 0 1 1 1 1 1 1 0 0 0 0 = 6
+0 0 1 1 1 1 1 1 1 1 0 0 = 8
+0 1 1 1 1 1 1 1 1 1 0 0 = 9
+0 1 1 1 1 1 1 1 1 1 1 1 = 11
+1 1 1 1 1 1 1 1 1 1 1 1 = 12
+1 1 1 1 1 1 1 1 1 1 1 0 = 11
+0 0 0 1 1 1 1 1 1 1 1 0 = 8
+0 0 0 1 1 1 1 1 1 0 0 0 = 6
+0 0 0 0 0 0 1 1 1 0 0 0 = 3
+0 0 0 0 0 0 1 0 0 0 0 0 = 1
+-----------------------------
+2 4 6 8 10 9 11 10 8 6 4 2 = 80
+=============================
+
+
+NOTE: The data for period 18 for Table 4 has been obtained
+      from the results of Section 4.
+
+
+====================================================================
+Computation of the maximum entropy cycle in C^*_22, C^*26 and C^* 30
+                          (Section 6)
+
+Use the programs 'restricted-products/GenerateRestrictedAlphaList'
+                 'general-products/maxentcrossprod'
+                 'general-products/maxentdotprod'
+---------------------------------------------------------------------
+Step 1: Generate the restricted lists.
+------- To do this we have to  follow Table 5.
+
+PERIOD 22:
+ajk@a01:~$ GenerateRestrictedAlphaList.exe 11 0 0 0 0 0 0 0 0 0 10
+Total number of elements in the restricted A list: 201600
+
+NOTE: The output is a file called: restricted-A-list.11
+
+
+PERIOD 26:
+ajk@a01:~$ GenerateRestrictedAlphaList.exe 11 9 0 0 0 0 0 0 0 0 0 10 12
+Total number of elements in the restricted A list: 201600
+
+NOTE: The output is a file called: restricted-A-list.13
+
+
+PERIOD 30:
+ajk@a01:~$ GenerateRestrictedAlphaList.exe 15 13 11 0 0 0 0 0 0 0 0 0 10 12 14
+Total number of elements in the restricted A list: 201600
+
+NOTE: The output is a file called: restricted-A-list.15
+
+
+Step 2: Computing the products alpha x beta and alpha . beta for all
+------- beta lower or equal than alpha in the corresponding list:
+
+ajk@a01:~$ maxentcrossprod.exe restricted-A-list.11 11.0 > p22-star.out &
+ajk@a01:~$ maxentdotprod.exe restricted-A-list.13 11.0 > p26-star.out
+ajk@a01:~$ maxentcrossprod.exe restricted-A-list.15 11.0 > p30-star.out &
+
+NOTES: Each of these commands last about 26 hours in the computer we
+       used.So, each task can be split exactly in the same manner
+       as it was explained in the part concerning C^0_18. Also, the whole
+       information about the output can be obtained with the help of the
+       program 'general-products/singleprodinfo' as it has been explained
+       before.
+
+=============================================================
+APPENDIX: the Gnuplot script to generate Figure 2.
+=============================================================
+# It is assumed that the data has been saved in the file maxentallbounds-50.dat
+unset key
+set terminal postscript eps
+set out 'maxentallbounds-50.eps'
+plot [x=4:51] "maxentallbounds-50.dat" every 2::2:::0 u 1:(log($2)-log($3)) w l,\
+"maxentallbounds-50.dat" every 4::2:::0 u 1:(log($2)-log($4)) w l,\
+"maxentallbounds-50.dat" every 4::4:::0 u 1:(log($2)-log($4)) w l,\
+"maxentallbounds-50.dat" every 2::2:::0 u 1:(log($2)-log($3)) with points pointtype 3,\
+"maxentallbounds-50.dat" every 4::2:::0 u 1:(log($2)-log($4))with points pointtype 4,\
+"maxentallbounds-50.dat" every 4::4:::0 u 1:(log($2)-log($4)) with points pointtype 12
+set out
+quit
+
+
