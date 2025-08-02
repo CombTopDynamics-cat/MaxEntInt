@@ -10,7 +10,7 @@ outpout of these programs.
 
 -----------------------------------------------------------------
 To obtain the executables of the programs follow the instructions
-contained in the file 'README.HowToGetThePrograms'.
+contained in the file 'README.md'.
 
 CONVENTION: When we say "use the program 'xxx/yyy'" we mean:
   go to the folder 'xxx' and run the program 'yyy.exe'.
