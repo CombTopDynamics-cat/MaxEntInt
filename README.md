@@ -1,10 +1,9 @@
 # MaxEntInt
 This repository contains the programs used in the paper
 
-"A lower bound for the maximum topological entropy of 4k+2-cycles"
-                             by
+"A lower bound for the maximum topological entropy of 4k+2-cycles"\
+                             by\
                Lluis Alseda, David Juher and Deborah King
-
 
 The directories:
      1-except,
